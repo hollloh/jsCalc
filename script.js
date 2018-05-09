@@ -12,6 +12,8 @@ TODO:
 3) fix floating points
    e.g.    0.1 - 0.3 = -0.19999999999999998
 
+4) 9(π-3) is wrong
+
 
 */
 
