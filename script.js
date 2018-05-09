@@ -1,4 +1,22 @@
 
+/*
+
+TODO:
+
+1) make parentheses do this (2)(3)(4) = 20
+   sort of fixed
+   result = (2)(3)(4) = 2*3*4
+
+2) nested parentheses     BANE
+
+3) fix floating points
+   e.g.    0.1 - 0.3 = -0.19999999999999998
+
+
+*/
+
+
+
 let display = document.getElementById('display');
 
 let nine = document.getElementById('nine');
@@ -30,34 +48,21 @@ let rndm = document.getElementById('rndm');
 let factorial = document.getElementById('factorial');
 
 
+
+
 function input() {
   display.value += this.value;
 }
-nine.onclick = input;
-eight.onclick = input;
-seven.onclick = input
-six.onclick = input;
-five.onclick = input;
-four.onclick = input;
-three.onclick = input;
-two.onclick = input;
-one.onclick = input;
-zero.onclick = input;
-point.onclick = input;
-divide.onclick = input;
-multiply.onclick = input;
-add.onclick = input;
-subtract.onclick = input;
-bPara.onclick = input;
-ePara.onclick = input;
-sqrt.onclick = input;
-exp.onclick = input;
-pi.onclick = input;
-factorial.onclick = input;
+let buttons = document.getElementsByClassName("btn");
+for (let i = 0; i < buttons.length; i++) {
+  if(!["back", "clear", "rndm", "equal"].includes(buttons[i].id)) {
+    buttons[i].onclick = input;
+  }
+}
 
 
 function rndmFnctn() {
-  display.value += Math.floor(Math.random()*(Math.pow(10,16)));
+  display.value += Math.floor(Math.random()*Math.pow(10,16));
 }
 rndm.onclick = rndmFnctn;
 
@@ -108,7 +113,7 @@ document.addEventListener('keyup', function(e) {
     display.style.backgroundColor = 'black';
     display.style.color = 'white';
   }
-  else if (e.keyCode === 88)  {
+  else if (e.ctrlKey === true && e.keyCode === 88)  {
     display.value = '';
   }
 });
@@ -117,30 +122,35 @@ document.addEventListener('keyup', function(e) {
 
 var cache = [];
 function factorialOf(num) {
-  if (num == 0 || num == 1)
+  if (num == 0 || num == 1) {
     return 1;
-  if (cache[num] > 0)
-    return cache[num];
+  }
+  if (cache[num] > 0) {
+    return cache[num];    
+  }
   return cache[num] = factorialOf(num - 1) * num;
 }
 
 function solve(x) {
   let pars = x.split(/([\/\÷\*\×\+\-\−\)\(\√\^\π\?\!\e])/)
   .filter(function(y) {
-    return y !== '';;
+    return y !== '';
   });
-  let math;
   console.log(pars);
   console.log('problem : ' + pars);
   let paren = [];
-  let nest = [];
+  let math;
   let maxLoop = 9; // NECESSARY ; not precise ; a safeguard from infinite loops ; increase after debugging
   while (maxLoop > 0) {
     maxLoop--
     for (var i = 0; i < pars.length; i++) {
 
       if (pars[i] === 'e') { // e.g. 1e+27
-        return pars.join('');
+        math = pars[i-1] * Math.pow(10, pars[i+2]);
+        pars.splice(i-1, 4, math);
+      }
+      else if (pars[i] === '?') {
+        pars[i] = Math.floor(Math.random()*Math.pow(10,16));
       }
       else if (pars[i] === '!') {
         if (!isNaN(pars[i-1])) {
@@ -159,8 +169,29 @@ function solve(x) {
            continue;
           }
           if (pars[i+1] === ')') {
-            pars.splice(i, 2, solve(paren.join('')));
-            paren = [];
+            if (!isNaN(pars[i-1]) && !isNaN(pars[i+2])) {
+              math = pars[i-1] * solve(paren.join('')) * pars[i+2];
+              pars.splice(i-1, 4, math);
+              paren = [];
+            }
+            else if (pars[i+2] === '(') {
+              pars.splice(i, 2, solve(paren.join('')) + '*'); // could be improved
+              paren = [];
+            }
+            else if (!isNaN(pars[i-1])) {
+              math = pars[i-1] * solve(paren.join(''));
+              pars.splice(i-1, 3, math);
+              paren = [];
+            }
+            else if (!isNaN(pars[i+2])) {
+              math = solve(paren.join('')) * pars[i+2];
+              pars.splice(i, 3, math);
+              paren = [];
+            }
+            else {
+              pars.splice(i, 2, solve(paren.join('')));
+              paren = [];  
+            } 
           }
         }
       }
@@ -281,6 +312,7 @@ function solve(x) {
       }
     }
   }
+
   console.log('answer : ' + pars);
   return pars.join('');
 }
