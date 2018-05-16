@@ -12,9 +12,6 @@ TODO:
 3) fix floating points
    e.g.    0.1 - 0.3 = -0.19999999999999998
 
-4) 9(π-3) is wrong
-
-
 */
 
 
@@ -147,7 +144,11 @@ function solve(x) {
     maxLoop--
     for (var i = 0; i < pars.length; i++) {
 
-      if (pars[i] === 'e') { // e.g. 1e+27
+      if (pars[i] === 'π') {
+        pars[i] = Math.PI;
+      }
+
+      else if (pars[i] === 'e') { // e.g. 1e+27
         math = pars[i-1] * Math.pow(10, pars[i+2]);
         pars.splice(i-1, 4, math);
       }
@@ -234,7 +235,15 @@ function solve(x) {
         }
         else if (pars.includes('-') || pars.includes('−')) {
           if (pars[i] === '-' || pars[i] === '−') {
-            if (pars[i+1] === 'π') {
+            if (pars[i-1] === 'π' && pars[i+1] === 'π') {
+              math = Math.PI - Math.PI;
+              pars.splice(i-1, 3, math);
+            }
+            else if (pars[i-1] === 'π') {
+              math = Math.PI - pars[i+1];
+              pars.splice(i-1, 3, math);
+            }
+            else if (pars[i+1] === 'π') {
               math = 0 - Math.PI;
               pars.splice(i, 2, math);
             }
