@@ -1,4 +1,4 @@
 # jsCalc
 freeCodeCamp project
 
-https://hollloh.github.io/jsCalc/
+https://ojjjo.github.io/jsCalc/
